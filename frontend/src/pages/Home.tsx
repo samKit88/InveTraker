@@ -4,6 +4,8 @@ function Home() {
   return (
     <div>
       <p>Welcom</p>
+      <br />
+      <br />
       <Link to={'/signin'}> Signin </Link>
       <br />
       <Link to={'/signup'}>Signup</Link>
