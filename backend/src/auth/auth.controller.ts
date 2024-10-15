@@ -29,6 +29,7 @@ export class AuthController {
   @Post('/signup')
   @HttpCode(HttpStatus.CREATED)
   signup(@Body() dto: AuthDto): Promise<Tokens> {
+    console.log(dto.email);
     return this.authService.signup(dto);
   }
 

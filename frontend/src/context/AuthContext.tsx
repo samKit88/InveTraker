@@ -7,7 +7,7 @@ const initialState: AuthState = {
   user: null,
 }
 
-type AuthContextType = {
+export type AuthContextType = {
   state: AuthState
   dispatch: React.Dispatch<AuthAction>
 }

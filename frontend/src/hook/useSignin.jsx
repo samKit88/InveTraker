@@ -1,17 +1,18 @@
 import { useState } from 'react'
 import { useAuthContext } from './useAuthContext'
-import { UserSchema } from '../schema/UserSchema'
+import { json } from 'react-router-dom'
+import { useSignup } from './useSignup'
 
-export const useSignup = () => {
+export const useSgnin = () => {
+  const [isLoding, setIsLoading] = useState()
   const [error, setError] = useState()
-  const [isLoding, setIsLoding] = useState()
   const { dispatch } = useAuthContext()
 
-  const signup = async (firstName, lastName, email, password) => {
-    setIsLoding(true)
+  const signin = async (firstName, lastName, email, password) => {
+    setIsLoading(true)
     setError(false)
 
-    const response = await fetch('http://localhost:3000/auth/signup', {
+    const response = await fetch('http://localhost:3000/auth/signin', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ firstName, lastName, email, password }),
@@ -20,20 +21,17 @@ export const useSignup = () => {
     const json = await response.json()
 
     if (!response.ok) {
-      setIsLoding(false)
+      setIsLoading(false)
       setError(json.error)
     }
 
     if (response.ok) {
-      // save the user to local storage
       localStorage.setItem('user', JSON.stringify(json))
 
-      // update the auth context
-      dispatch({ type: 'LOGIN', payload: json })
-
-      setIsLoding(false)
+      dispatch({ type: 'LOGIIN', payload: json })
     }
+    setIsLoading(false)
   }
 
-  return { signup, isLoding, error }
+  return { signin, isLoding, error }
 }
