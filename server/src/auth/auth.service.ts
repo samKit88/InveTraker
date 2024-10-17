@@ -12,6 +12,7 @@ import { Tokens } from './type';
 import { JwtService } from '@nestjs/jwt';
 
 import { MailService } from 'src/mail/mail.service';
+import { SigninDto } from './dto/signin.dto';
 
 @Injectable()
 export class AuthService {
@@ -65,23 +66,29 @@ export class AuthService {
     return tokens;
   }
 
-  // --------------- login --------------------------------------------
+  // --------------- signin --------------------------------------------
 
-  async signin(dto: AuthDto): Promise<Tokens> {
-    const user = await this.prismaService.user.findUnique({
+  async signin(
+    dto: SigninDto,
+  ): Promise<{ accessToken: string; refreshToken: string; user: SigninDto }> {
+    const findUser = await this.prismaService.user.findUnique({
       where: {
         email: dto.email,
       },
     });
 
-    if (!user) throw new ForbiddenException('Access Denied');
+    if (!findUser) throw new ForbiddenException('Access Denied');
 
-    const passWordMatches = await bcrypt.compare(dto.password, user.hash);
+    const passWordMatches = await bcrypt.compare(dto.password, findUser.hash);
     if (!passWordMatches) throw new ForbiddenException('Incorect Password');
 
-    const tokens = await this.getTokens(user.id, user.email);
-    await this.updateRtHash(user.id, tokens.refresh_token);
-    return tokens;
+    const tokens = await this.getTokens(findUser.id, findUser.email);
+    await this.updateRtHash(findUser.id, tokens.refresh_token);
+    const accessToken = tokens.access_token;
+    const refreshToken = tokens.refresh_token;
+    const user = dto;
+
+    return { accessToken, refreshToken, user };
   }
 
   // --------------- Reset Password --------------------------------------------
@@ -201,7 +208,7 @@ export class AuthService {
 
     const tokens = await this.getTokens(user.id, user.email);
     await this.updateRtHash(user.id, tokens.refresh_token);
-    return tokens;
+    return tokens.access_token;
   }
 
   // -------------------------- create user ----------------------------------

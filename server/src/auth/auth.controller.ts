@@ -21,6 +21,7 @@ import { Request } from 'express';
 import { create } from 'domain';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { UserId } from 'src/decorators/userId.decorator';
+import { SigninDto } from './dto/signin.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -35,7 +36,9 @@ export class AuthController {
 
   @Post('/signin')
   @HttpCode(HttpStatus.OK)
-  signin(@Body() dto: AuthDto): Promise<Tokens> {
+  signin(
+    @Body() dto: SigninDto,
+  ): Promise<{ accessToken: string; refreshToken: string; user: SigninDto }> {
     return this.authService.signin(dto);
   }
 
