@@ -1,65 +1,46 @@
-import React, { useState } from 'react'
-import { Link } from 'react-router-dom'
-import { useSgnin } from '../hook/useSignin'
+import { useForm, zodResolver } from '@mantine/form'
+import { useAppDispatch } from '../store/store'
+import { SigninForm, signinSchema } from '../Schema/SigninSchema'
+import { SigninMutation } from '../api/signinApi'
+import { AxiosError } from 'axios'
+import SignInForm from './Signin/Components/SigninForm'
+import { dispatchUser } from '../store/slice/userDispatcher'
+
 function Signin() {
-  const [firstName, setFirstName] = useState('')
-  const [lastName, setlastName] = useState('')
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const { signin, error, isLoding } = useSgnin()
+  const dispatch = useAppDispatch()
 
-  console.log(error)
+  const { mutate, status } = SigninMutation(
+    (error: AxiosError | any) => {
+      console.log(error)
+    },
+    (data) => {
+      // console.log(data)
+      dispatchUser(data, dispatch)
+    }
+  )
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-
-    await signin(firstName, lastName, email, password)
+  const onSave = async (values: SigninForm) => {
+    try {
+      mutate(values)
+      // console.log(values)
+    } catch (error) {
+      console.log(error)
+    }
   }
+
+  const form = useForm<SigninForm>({
+    initialValues: {
+      email: '',
+      password: '',
+    },
+
+    validate: zodResolver(signinSchema),
+  })
+
   return (
     <div>
       <p>Signup</p>
-      <form className="signup" onSubmit={handleSubmit}>
-        <h3>Sign up</h3>
-
-        <label>First Name: </label>
-        <input
-          type="firstName"
-          onChange={(e) => setFirstName(e.target.value)}
-          value={firstName}
-        />
-        <br />
-        <br />
-
-        <label>Last Name: </label>
-        <input
-          type="firstName"
-          onChange={(e) => setlastName(e.target.value)}
-          value={lastName}
-        />
-
-        <br />
-        <br />
-
-        <label>Email: </label>
-        <input
-          type="email"
-          onChange={(e) => setEmail(e.target.value)}
-          value={email}
-        />
-        <br />
-        <br />
-
-        <label>Password: </label>
-        <input
-          type="password"
-          onChange={(e) => setPassword(e.target.value)}
-          value={password}
-        />
-
-        <button disabled={isLoding}>Sign up</button>
-        {error && <div className="error">{error}</div>}
-      </form>
-      <Link to={'/'}>Home</Link>
+      <SignInForm form={form} onSave={onSave} />
     </div>
   )
 }
