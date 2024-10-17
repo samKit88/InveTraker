@@ -9,10 +9,7 @@ export const AuthStateSchema = z.object({
 export const AuthActionSchema = z.union([
   z.object({
     type: literal('LOGIN'),
-    payload: z.object({
-      id: UserSchema.shape.id,
-      email: UserSchema.shape.email,
-    }),
+    payload: UserSchema,
   }),
   z.object({
     type: literal('LOGOUT'),
