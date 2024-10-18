@@ -3,6 +3,9 @@ import Home from '../pages/Home'
 import Signin from '../pages/Signin'
 import Signup from '../pages/Signup'
 import Dashboard from '../pages/Dashboard'
+import ProtectedRoutes from '../Layout/ProtectedRoutes'
+import Inventory from '../pages/Inventory'
+import PublicRoutes from '../Layout/PublicRoutes'
 
 const router = createBrowserRouter([
   {
@@ -11,16 +14,32 @@ const router = createBrowserRouter([
     errorElement: <div>404 Not Found</div>,
   },
   {
-    path: '/signin',
-    element: <Signin />,
+    element: <PublicRoutes />,
+    children: [
+      {
+        path: '/signin',
+        element: <Signin />,
+      },
+      {
+        path: '/signup',
+        element: <Signup />,
+      },
+    ],
   },
   {
-    path: '/signup',
-    element: <Signup />,
-  },
-  {
-    path: '/dashboard',
-    element: <Dashboard />,
+    element: <ProtectedRoutes />,
+    children: [
+      {
+        path: '/dashboard',
+        element: <Dashboard />,
+        children: [
+          {
+            path: 'Inventory',
+            element: <Inventory />,
+          },
+        ],
+      },
+    ],
   },
 ])
 
