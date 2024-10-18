@@ -14,14 +14,21 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { AuthDto, ResetPsswordDto, ResetPsswordConfirmationDto } from './dto';
+import {
+  SignupDto,
+  SigninDto,
+  ResetPsswordDto,
+  ResetPsswordConfirmationDto,
+  ResponseDto,
+  CreateUserDto,
+} from './dto';
 import { Tokens } from './type';
 import { AuthGuard } from '@nestjs/passport';
 import { Request } from 'express';
 import { create } from 'domain';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { UserId } from 'src/decorators/userId.decorator';
-import { SigninDto } from './dto/signin.dto';
+import { promises } from 'dns';
 
 @Controller('auth')
 export class AuthController {
@@ -29,16 +36,14 @@ export class AuthController {
 
   @Post('/signup')
   @HttpCode(HttpStatus.CREATED)
-  signup(@Body() dto: AuthDto): Promise<Tokens> {
+  signup(@Body() dto: SignupDto): Promise<ResponseDto> {
     console.log(dto.email);
     return this.authService.signup(dto);
   }
 
   @Post('/signin')
   @HttpCode(HttpStatus.OK)
-  signin(
-    @Body() dto: SigninDto,
-  ): Promise<{ accessToken: string; refreshToken: string; user: SigninDto }> {
+  signin(@Body() dto: SigninDto): Promise<ResponseDto> {
     return this.authService.signin(dto);
   }
 
@@ -89,9 +94,9 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   createUser(
     @Req() req: Request,
-    @Body() dto: AuthDto,
+    @Body() dto: SignupDto,
     @UserId() userId: number,
-  ) {
+  ): Promise<CreateUserDto> {
     return this.authService.createUser(userId, dto);
   }
 

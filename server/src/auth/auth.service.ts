@@ -5,14 +5,13 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { AuthDto } from './dto';
+import { SignupDto, SigninDto, ResponseDto, CreateUserDto } from './dto';
 import * as bcrypt from 'bcrypt';
 import { Tokens } from './type';
 
 import { JwtService } from '@nestjs/jwt';
 
 import { MailService } from 'src/mail/mail.service';
-import { SigninDto } from './dto/signin.dto';
 
 @Injectable()
 export class AuthService {
@@ -24,7 +23,7 @@ export class AuthService {
 
   // --------------- Signup --------------------------------------------
 
-  async signup(dto: AuthDto): Promise<Tokens> {
+  async signup(dto: SignupDto): Promise<ResponseDto> {
     const firstUser = await this.prismaService.user.findFirst();
 
     if (!firstUser) {
@@ -40,16 +39,21 @@ export class AuthService {
       });
       const tokens = await this.getTokens(newUser.id, newUser.email);
       await this.updateRtHash(newUser.id, tokens.refresh_token);
-      return tokens;
+      return {
+        user: newUser.email,
+        accessToken: tokens.access_token,
+        refreshToken: tokens.refresh_token,
+      };
     }
 
-    const user = await this.prismaService.user.findUnique({
+    const checkUser = await this.prismaService.user.findUnique({
       where: {
         email: dto.email,
       },
     });
 
-    if (user) throw new ForbiddenException('You have an account please login');
+    if (checkUser)
+      throw new ForbiddenException('You have an account please login');
 
     const hash = await this.hashData(dto.password);
     const newUser = await this.prismaService.user.create({
@@ -63,14 +67,16 @@ export class AuthService {
 
     const tokens = await this.getTokens(newUser.id, newUser.email);
     await this.updateRtHash(newUser.id, tokens.refresh_token);
-    return tokens;
+    return {
+      user: newUser.email,
+      accessToken: tokens.access_token,
+      refreshToken: tokens.refresh_token,
+    };
   }
 
   // --------------- signin --------------------------------------------
 
-  async signin(
-    dto: SigninDto,
-  ): Promise<{ accessToken: string; refreshToken: string; user: SigninDto }> {
+  async signin(dto: SigninDto): Promise<ResponseDto> {
     const findUser = await this.prismaService.user.findUnique({
       where: {
         email: dto.email,
@@ -84,11 +90,11 @@ export class AuthService {
 
     const tokens = await this.getTokens(findUser.id, findUser.email);
     await this.updateRtHash(findUser.id, tokens.refresh_token);
-    const accessToken = tokens.access_token;
-    const refreshToken = tokens.refresh_token;
-    const user = dto;
-
-    return { accessToken, refreshToken, user };
+    return {
+      user: findUser.email,
+      accessToken: tokens.access_token,
+      refreshToken: tokens.refresh_token,
+    };
   }
 
   // --------------- Reset Password --------------------------------------------
@@ -212,7 +218,7 @@ export class AuthService {
   }
 
   // -------------------------- create user ----------------------------------
-  async createUser(userId: number, dto: AuthDto) {
+  async createUser(userId: number, dto: SignupDto): Promise<CreateUserDto> {
     Logger.debug(typeof userId);
     Logger.debug(userId);
     const findAdmin = await this.prismaService.user.findUnique({
@@ -243,7 +249,7 @@ export class AuthService {
       },
     });
 
-    return [newUser.firstName, newUser.lastName, newUser.email];
+    return { user: newUser.email };
   }
 
   // -------------------------- ban user ------------------------------------
