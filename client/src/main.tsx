@@ -10,6 +10,7 @@ import { MantineProvider } from '@mantine/core'
 const queryClient = new QueryClient()
 import '@mantine/notifications/styles.css'
 import '@mantine/core/styles.css'
+import './index.css'
 import '@mantine/dropzone/styles.css'
 import { PersistGate } from 'redux-persist/es/integration/react'
 
