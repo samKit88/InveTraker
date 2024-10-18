@@ -1,5 +1,4 @@
 import { z } from 'zod'
-import { UserSchema } from './UserSchema'
 
 export const signinSchema = z.object({
   email: z.string().email(),
@@ -18,7 +17,7 @@ export const signinSchema = z.object({
 })
 
 export interface TokenResponse {
-  user: SigninForm
+  user: string
   accessToken: string
   refreshToken: string
 }

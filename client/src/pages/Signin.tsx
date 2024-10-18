@@ -5,11 +5,13 @@ import { SigninMutation } from '../api/signinApi'
 import { AxiosError } from 'axios'
 import SignInForm from './Signin/Components/SigninForm'
 import { dispatchUser } from '../store/slice/userDispatcher'
+import { useNavigate } from 'react-router-dom'
 
-function Signin() {
+const Signin = () => {
   const dispatch = useAppDispatch()
+  const naviget = useNavigate()
 
-  const { mutate, status } = SigninMutation(
+  const { mutate, isPending } = SigninMutation(
     (error: AxiosError | any) => {
       console.log(error)
     },
@@ -23,6 +25,7 @@ function Signin() {
     try {
       mutate(values)
       // console.log(values)
+      naviget('/dashboard')
     } catch (error) {
       console.log(error)
     }
@@ -39,8 +42,8 @@ function Signin() {
 
   return (
     <div>
-      <p>Signup</p>
-      <SignInForm form={form} onSave={onSave} />
+      <p>SignIn</p>
+      <SignInForm form={form} onSave={onSave} isLoading={isPending} />
     </div>
   )
 }

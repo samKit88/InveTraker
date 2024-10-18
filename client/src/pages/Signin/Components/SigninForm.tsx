@@ -7,9 +7,9 @@ import { SigninForm } from '../../../Schema/SigninSchema'
 interface SigninFormProps {
   form: UseFormReturnType<SigninForm>
   onSave: (values: SigninForm) => void
-  // isLoading: string
+  isLoading: boolean
 }
-const SignInForm: React.FC<SigninFormProps> = ({ form, onSave }) => {
+const SignInForm: React.FC<SigninFormProps> = ({ form, onSave, isLoading }) => {
   return (
     <>
       <form onSubmit={form.onSubmit(onSave)}>
@@ -27,7 +27,7 @@ const SignInForm: React.FC<SigninFormProps> = ({ form, onSave }) => {
           type="submit"
           fullWidth
           className="mt-6"
-          // loading= {isLoading}
+          loading={isLoading}
           loaderProps={{
             type: 'dots',
           }}
