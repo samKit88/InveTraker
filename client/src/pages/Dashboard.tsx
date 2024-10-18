@@ -42,6 +42,7 @@ const Dashboard = () => {
             className="w-full 
               bg-gray-100
             "
+            key={data.label}
           >
             <Button
               fullWidth

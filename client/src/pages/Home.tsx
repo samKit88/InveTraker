@@ -3,7 +3,7 @@ import { Link, Outlet } from 'react-router-dom'
 function Home() {
   return (
     <div>
-      <p>Welcom</p>
+      <p className="text-xl text-red-700">Welcom</p>
       <br />
       <br />
       <Link to={'/signin'}> Signin </Link>

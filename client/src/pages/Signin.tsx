@@ -41,9 +41,13 @@ const Signin = () => {
   })
 
   return (
-    <div>
-      <p>SignIn</p>
-      <SignInForm form={form} onSave={onSave} isLoading={isPending} />
+    <div className="h-screen flex justify-center bg-gray-50 ">
+      <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-sm my-auto">
+        <p className='className="text-2xl font-bold mb-6 text-center"'>
+          SignIn
+        </p>
+        <SignInForm form={form} onSave={onSave} isLoading={isPending} />
+      </div>
     </div>
   )
 }
