@@ -5,7 +5,9 @@ import {
   Get,
   HttpCode,
   HttpStatus,
+  Logger,
   Param,
+  Patch,
   Post,
   Put,
   Query,
@@ -24,6 +26,7 @@ import { QueryDto } from './dto/query.dto';
 import { DEFAULT_PAGE, DEFAULT_PAGE_SIZE } from 'src/utils/constants';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { UpdateDto } from './dto/update.dto';
+import { CreateInveDto } from './dto/create.inve.dto';
 
 @Controller('inventory')
 export class InventoryController {
@@ -46,29 +49,31 @@ export class InventoryController {
   @UseGuards(AuthGuard('jwt'))
   @Post()
   @HttpCode(HttpStatus.OK)
-  createNewinv(@Body() dto: InveDto, @Req() req: Request) {
+  createNewinv(@Body() dto: CreateInveDto, @Req() req: Request) {
     const user = req.user;
+
+    console.log('from create inventory', dto);
     return this.invService.createNewinv(dto, user['email']);
   }
 
-  @UseGuards(AuthGuard('jwt'))
-  @Post('/create-category')
-  @HttpCode(HttpStatus.OK)
-  createCategory(@Body() dto: CategoryDto, @Req() req: Request) {
-    const user = req.user;
-    return this.invService.createNewCategory(dto, user['email']);
-  }
+  // @UseGuards(AuthGuard('jwt'))
+  // @Post('/create-category')
+  // @HttpCode(HttpStatus.OK)
+  // createCategory(@Body() dto: CategoryDto, @Req() req: Request) {
+  //   const user = req.user;
+  //   return this.invService.createNewCategory(dto, user['email']);
+  // }
+
+  // @UseGuards(AuthGuard('jwt'))
+  // @Post('/create-brand')
+  // @HttpCode(HttpStatus.OK)
+  // createNewBrand(@Body() dto: BrandDto, @Req() req: Request) {
+  //   const user = req.user;
+  //   return this.invService.createNewBrand(dto, user['email']);
+  // }
 
   @UseGuards(AuthGuard('jwt'))
-  @Post('/create-brand')
-  @HttpCode(HttpStatus.OK)
-  createNewBrand(@Body() dto: BrandDto, @Req() req: Request) {
-    const user = req.user;
-    return this.invService.createNewBrand(dto, user['email']);
-  }
-
-  @UseGuards(AuthGuard('jwt'))
-  @Put('/:id')
+  @Patch('/:id')
   @HttpCode(HttpStatus.OK)
   updateInventory(
     @Param('id') id: string,

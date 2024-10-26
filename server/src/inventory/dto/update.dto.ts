@@ -40,5 +40,5 @@ export class UpdateDto {
   description: string;
   @IsOptional()
   @IsEnum(Product)
-  produtType: Product;
+  productType: Product;
 }

@@ -6,18 +6,26 @@ import { AxiosError } from 'axios'
 import SignInForm from './Signin/Components/SigninForm'
 import { dispatchUser } from '../store/slice/userDispatcher'
 import { useNavigate } from 'react-router-dom'
+import { notifications } from '@mantine/notifications'
 
 const Signin = () => {
   const dispatch = useAppDispatch()
-  const naviget = useNavigate()
+  const navigate = useNavigate()
 
   const { mutate, isPending } = SigninMutation(
     (error: AxiosError | any) => {
       console.log(error)
+      notifications.show({
+        title: 'Error',
+        autoClose: 5000,
+        message: error?.response?.data.message || 'An error occurred',
+        color: 'red',
+      })
     },
     (data) => {
       // console.log(data)
       dispatchUser(data, dispatch)
+      navigate('/dashboard')
     }
   )
 
@@ -25,7 +33,6 @@ const Signin = () => {
     try {
       mutate(values)
       // console.log(values)
-      naviget('/dashboard')
     } catch (error) {
       console.log(error)
     }

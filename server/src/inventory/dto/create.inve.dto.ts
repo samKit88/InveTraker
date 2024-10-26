@@ -2,15 +2,15 @@ import { IsDecimal, IsEnum, IsNumber, IsString } from 'class-validator';
 import { Product, Tax, Unit } from '@prisma/client';
 import { Decimal } from '@prisma/client/runtime/library';
 
-export class InveDto {
+export class CreateInveDto {
   @IsString()
   name: string;
   @IsString()
   barcode: string;
-  @IsNumber()
-  categoryId: number;
-  @IsNumber()
-  brandId: number;
+  @IsString()
+  category: string;
+  @IsString()
+  brand: string;
   // @IsDecimal()
   buyingPrice: number;
   // @IsDecimal()

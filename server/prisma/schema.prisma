@@ -52,7 +52,7 @@ model Inventory {
   minStock     Int      @default(10)
   taxType      Tax
   description  String
-  produtType   Product
+  productType  Product
   images       Image[] // one to many
 
   @@map("inventory")

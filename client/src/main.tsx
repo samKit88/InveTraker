@@ -1,5 +1,5 @@
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
+import React, { StrictMode } from 'react'
+import ReactDOM from 'react-dom/client'
 import { RouterProvider } from 'react-router-dom'
 import router from './routers/routers'
 // import { AuthContextProvider } from './context/AuthContext'
@@ -13,17 +13,22 @@ import '@mantine/core/styles.css'
 import './index.css'
 import '@mantine/dropzone/styles.css'
 import { PersistGate } from 'redux-persist/es/integration/react'
+import { Notifications } from '@mantine/notifications'
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 
-createRoot(document.getElementById('root')!).render(
-  <StrictMode>
+ReactDOM.createRoot(document.getElementById('root')!).render(
+  <React.StrictMode>
     <Provider store={store}>
-      <PersistGate loading={null} persistor={persistor}>
-        <QueryClientProvider client={queryClient}>
-          <MantineProvider>
+      <MantineProvider defaultColorScheme="light" forceColorScheme="light">
+        <PersistGate loading={null} persistor={persistor}>
+          <QueryClientProvider client={queryClient}>
             <RouterProvider router={router} />
-          </MantineProvider>
-        </QueryClientProvider>
-      </PersistGate>
+            <Notifications position="top-right" />
+            <ReactQueryDevtools initialIsOpen={false} />
+          </QueryClientProvider>
+        </PersistGate>
+        <Notifications position="top-right" />
+      </MantineProvider>
     </Provider>
-  </StrictMode>
+  </React.StrictMode>
 )

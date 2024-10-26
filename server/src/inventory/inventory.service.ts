@@ -12,6 +12,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { error } from 'console';
 import { NotFoundError } from 'rxjs';
+import { CreateInveDto } from './dto/create.inve.dto';
 
 @Injectable()
 export class InventoryService {
@@ -24,6 +25,10 @@ export class InventoryService {
       take: limit,
       where: { name: { contains: queryDto.search } },
       orderBy: { [queryDto.sort]: queryDto.order },
+      include: {
+        category: true,
+        brand: true,
+      },
     });
 
     if (!productes) return 'No producte';
@@ -44,8 +49,8 @@ export class InventoryService {
     return producte;
   }
 
-  async createNewinv(dto: InveDto, userEmail: string) {
-    console.log(JSON.stringify(dto));
+  async createNewinv(dto: CreateInveDto, userEmail: string) {
+    // console.log(JSON.stringify(dto));
     const isUser = await this.prismaService.user.findUnique({
       where: {
         email: userEmail,
@@ -53,6 +58,9 @@ export class InventoryService {
     });
 
     if (!isUser) throw new ForbiddenException('Access Denied');
+
+    const category = await this.createNewCategory({ name: dto.category });
+    const brand = await this.createNewBrand({ name: dto.brand });
 
     const newProducte = await this.prismaService.inventory.create({
       data: {
@@ -60,29 +68,29 @@ export class InventoryService {
         userId: isUser.id,
         // user: { connect: { id: isUser.id } },
         barcode: dto.barcode,
-        categoryId: dto.categoryId,
-        brandId: dto.brandId,
+        categoryId: category.id,
+        brandId: brand.id,
         buyingPrice: dto.buyingPrice,
         sellingPrice: dto.sellingPrice,
         productUnit: dto.productUnit,
         quantity: dto.quantity,
         taxType: dto.taxType,
         description: dto.description,
-        produtType: dto.produtType,
+        productType: dto.productType,
       },
     });
 
-    return newProducte;
+    return dto;
   }
 
-  async createNewCategory(dto: CategoryDto, userEmai: string) {
-    const isUser = await this.prismaService.user.findUnique({
-      where: {
-        email: userEmai,
-      },
-    });
+  async createNewCategory(dto: CategoryDto) {
+    // const isUser = await this.prismaService.user.findUnique({
+    //   where: {
+    //     email: userEmai,
+    //   },
+    // });
 
-    if (!isUser) throw new ForbiddenException('Access Denied');
+    // if (!isUser) throw new ForbiddenException('Access Denied');
 
     const checkCategory = await this.prismaService.category.findUnique({
       where: {
@@ -90,7 +98,8 @@ export class InventoryService {
       },
     });
 
-    if (checkCategory) throw new ForbiddenException('Category exsist');
+    // if (checkCategory) throw new ForbiddenException('Category exsist');
+    if (checkCategory) return checkCategory;
 
     const newCategory = await this.prismaService.category.create({
       data: {
@@ -98,17 +107,17 @@ export class InventoryService {
       },
     });
 
-    return newCategory.name;
+    return newCategory;
   }
 
-  async createNewBrand(dto: BrandDto, userEmail: string) {
-    const isUser = await this.prismaService.user.findUnique({
-      where: {
-        email: userEmail,
-      },
-    });
+  async createNewBrand(dto: BrandDto) {
+    // const isUser = await this.prismaService.user.findUnique({
+    //   where: {
+    //     email: userEmail,
+    //   },
+    // });
 
-    if (!isUser) throw new ForbiddenException('Access Denied');
+    // if (!isUser) throw new ForbiddenException('Access Denied');
 
     const checkBrand = await this.prismaService.brand.findUnique({
       where: {
@@ -116,7 +125,8 @@ export class InventoryService {
       },
     });
 
-    if (checkBrand) throw new ForbiddenException('Brand Exsit');
+    // if (checkBrand) throw new ForbiddenException('Brand Exsit');
+    if (checkBrand) return checkBrand;
 
     const newBrand = await this.prismaService.brand.create({
       data: {
@@ -124,7 +134,7 @@ export class InventoryService {
       },
     });
 
-    return newBrand.name;
+    return newBrand;
   }
 
   async updateInventory(inventoryId: number, userEmail: string, dto: InveDto) {
@@ -161,7 +171,7 @@ export class InventoryService {
         quantity: dto.quantity,
         taxType: dto.taxType,
         description: dto.description,
-        produtType: dto.produtType,
+        productType: dto.productType,
       },
     });
 
@@ -279,3 +289,18 @@ export class InventoryService {
     return imageDeleted;
   }
 }
+
+// {
+
+//   "name": "Iphone",
+//   "barcode": "asdfadf",
+//   "categoryId": 1,
+//   "brand": 2,
+//   "buyingPrice": 13.99,
+//   "sellingPrice": 21.88,
+//   "productUnit": "pieces",
+//   "quantity": 10,
+//   "taxType": "taxable",
+//   "description": "asfasdfsd",
+//   "productType": "Use"
+// }

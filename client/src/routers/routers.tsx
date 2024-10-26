@@ -6,6 +6,7 @@ import Dashboard from '../pages/Dashboard'
 import ProtectedRoutes from '../Layout/ProtectedRoutes'
 import Inventory from '../pages/Inventory'
 import PublicRoutes from '../Layout/PublicRoutes'
+import Product from '../pages/Product'
 
 const router = createBrowserRouter([
   {
@@ -36,6 +37,10 @@ const router = createBrowserRouter([
           {
             path: 'Inventory',
             element: <Inventory />,
+          },
+          {
+            path: 'Product',
+            element: <Product />,
           },
         ],
       },
